@@ -1,0 +1,854 @@
+[
+    {
+        "id": "76460f71d6773d9f",
+        "type": "tab",
+        "label": "Video Bar",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "f16cc6272e5b22df",
+        "type": "http in",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "url": "/api/v1/status/pairing",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 100,
+        "wires": [
+            [
+                "244960b69962e17c"
+            ]
+        ]
+    },
+    {
+        "id": "a944c9d32f4b58f4",
+        "type": "http response",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 510,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "244960b69962e17c",
+        "type": "template",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{\n    \"accessories\": [\n    \n    {\n        \"type\": \"remote\",\n        \"status\": \"unknown\"\n    },\n    {\n        \"type\": \"touchpanel\",\n        \"status\": {{flow.paired}}\n    }\n    ]\n}",
+        "output": "json",
+        "x": 360,
+        "y": 100,
+        "wires": [
+            [
+                "a944c9d32f4b58f4"
+            ]
+        ]
+    },
+    {
+        "id": "aef6f8f7b675557e",
+        "type": "inject",
+        "z": "76460f71d6773d9f",
+        "name": "unpair",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "false",
+        "payloadType": "bool",
+        "x": 170,
+        "y": 200,
+        "wires": [
+            [
+                "f89d389383610424"
+            ]
+        ]
+    },
+    {
+        "id": "1c27762ec9b2cb72",
+        "type": "inject",
+        "z": "76460f71d6773d9f",
+        "name": "paired",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 170,
+        "y": 160,
+        "wires": [
+            [
+                "f89d389383610424"
+            ]
+        ]
+    },
+    {
+        "id": "f89d389383610424",
+        "type": "change",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "paired",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 380,
+        "y": 160,
+        "wires": [
+            [
+                "85d77b0e2388d374"
+            ]
+        ]
+    },
+    {
+        "id": "77071673161437d8",
+        "type": "http in",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "url": "/api/v1/status/appmode",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 180,
+        "y": 280,
+        "wires": [
+            [
+                "180a53b99ccf7200"
+            ]
+        ]
+    },
+    {
+        "id": "e7927ba4be44f337",
+        "type": "http response",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 570,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "180a53b99ccf7200",
+        "type": "template",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{\n    \"mode\": \"{{flow.appmode}}\"\n}",
+        "output": "json",
+        "x": 420,
+        "y": 280,
+        "wires": [
+            [
+                "e7927ba4be44f337"
+            ]
+        ]
+    },
+    {
+        "id": "cbd87e3449c1c68a",
+        "type": "inject",
+        "z": "76460f71d6773d9f",
+        "name": "videoOS",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "videoOS",
+        "payloadType": "str",
+        "x": 180,
+        "y": 380,
+        "wires": [
+            [
+                "18f7d7516c0a9b74"
+            ]
+        ]
+    },
+    {
+        "id": "35b1249e0faea3f1",
+        "type": "inject",
+        "z": "76460f71d6773d9f",
+        "name": "Zoom Room",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "zoom",
+        "payloadType": "str",
+        "x": 190,
+        "y": 340,
+        "wires": [
+            [
+                "18f7d7516c0a9b74"
+            ]
+        ]
+    },
+    {
+        "id": "18f7d7516c0a9b74",
+        "type": "change",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "appmode",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 390,
+        "y": 340,
+        "wires": [
+            [
+                "3576885d752dd485"
+            ]
+        ]
+    },
+    {
+        "id": "85d77b0e2388d374",
+        "type": "debug",
+        "z": "76460f71d6773d9f",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 560,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "3576885d752dd485",
+        "type": "debug",
+        "z": "76460f71d6773d9f",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 560,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "0d61f587c1869a0c",
+        "type": "http in",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "url": "/api/v1/status/zoom",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 150,
+        "y": 440,
+        "wires": [
+            [
+                "057d07b9976a41dc"
+            ]
+        ]
+    },
+    {
+        "id": "9742ed46db237f65",
+        "type": "http response",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 550,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "057d07b9976a41dc",
+        "type": "template",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{\n    \"zoomRoomStatus\": {{flow.connectedToZoom}}\n}",
+        "output": "json",
+        "x": 400,
+        "y": 440,
+        "wires": [
+            [
+                "9742ed46db237f65"
+            ]
+        ]
+    },
+    {
+        "id": "1b3b0e7b4a14fcdb",
+        "type": "inject",
+        "z": "76460f71d6773d9f",
+        "name": "disconnected",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "false",
+        "payloadType": "bool",
+        "x": 170,
+        "y": 540,
+        "wires": [
+            [
+                "97a2de392482ec61"
+            ]
+        ]
+    },
+    {
+        "id": "a62ac7c42868e463",
+        "type": "inject",
+        "z": "76460f71d6773d9f",
+        "name": "connected",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 170,
+        "y": 500,
+        "wires": [
+            [
+                "97a2de392482ec61"
+            ]
+        ]
+    },
+    {
+        "id": "97a2de392482ec61",
+        "type": "change",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "connectedToZoom",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 400,
+        "y": 500,
+        "wires": [
+            [
+                "027ff2409bfc5a98"
+            ]
+        ]
+    },
+    {
+        "id": "027ff2409bfc5a98",
+        "type": "debug",
+        "z": "76460f71d6773d9f",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 600,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "12d9ba74c095befa",
+        "type": "http in",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "url": "/private/pleasedontlook/secretstatus",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 186.5,
+        "y": 682,
+        "wires": [
+            [
+                "0d50ae3e7fb805f9"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "5e78d7971436dc84",
+        "type": "http response",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 397.5,
+        "y": 709,
+        "wires": [],
+        "l": false
+    },
+    {
+        "id": "2a9b81c87ceed70b",
+        "type": "debug",
+        "z": "76460f71d6773d9f",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 382.5,
+        "y": 641,
+        "wires": [],
+        "l": false
+    },
+    {
+        "id": "6bfa3ec1cf2a01b5",
+        "type": "ui-template",
+        "z": "76460f71d6773d9f",
+        "group": "d64492c2fc2dd1fe",
+        "page": "",
+        "ui": "",
+        "name": "sniffable",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "head": "",
+        "format": "<template>\n    <div>\n        <v-btn @click=\"query()\">I can be sniffed!!</v-btn>\n    </div>\n</template>\n\n<script>\n    export default {\n        data() {\n            // define variables available component-wide\n            // (in <template> and component functions)\n            return {\n                count: 0\n            }\n        },\n        watch: {\n            // watch for any changes of \"count\"\n        },\n        computed: {\n            // automatically compute this variable\n            // whenever VueJS deems appropriate\n        },\n        methods: {\n            // expose a method to our <template> and Vue Application\n            query: async function() {\n                const response = await fetch(\"/private/pleasedontlook/secretstatus\");\n            }\n        },\n        mounted() {\n            // code here when the component is first loaded\n        },\n        unmounted() {\n            // code here when the component is removed from the Dashboard\n            // i.e. when the user navigates away from the page\n        }\n    }\n</script>\n<style>\n    /* define any styles here - supports raw CSS */\n    .my-class {\n        color: red;\n    }\n</style>",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 240,
+        "y": 620,
+        "wires": [
+            [
+                "2a9b81c87ceed70b"
+            ]
+        ]
+    },
+    {
+        "id": "e577fbc23964c880",
+        "type": "ui-text",
+        "z": "76460f71d6773d9f",
+        "group": "d64492c2fc2dd1fe",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Super Important Metric",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#717171",
+        "className": "",
+        "x": 387.5,
+        "y": 764,
+        "wires": [],
+        "l": false
+    },
+    {
+        "id": "30d98200b5b2a1b2",
+        "type": "ui-text",
+        "z": "76460f71d6773d9f",
+        "group": "d64492c2fc2dd1fe",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Greeting",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#717171",
+        "className": "",
+        "x": 460,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "45d43d575475514a",
+        "type": "template",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "Hello {{payload.name}}!",
+        "output": "str",
+        "x": 280,
+        "y": 860,
+        "wires": [
+            [
+                "30d98200b5b2a1b2"
+            ]
+        ]
+    },
+    {
+        "id": "c555d673e0414aa5",
+        "type": "ui-form",
+        "z": "76460f71d6773d9f",
+        "name": "Greeting form",
+        "group": "d64492c2fc2dd1fe",
+        "label": "",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "options": [
+            {
+                "label": "Name",
+                "key": "name",
+                "type": "text",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "name": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "clear",
+        "resetOnSubmit": true,
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "className": "",
+        "x": 110,
+        "y": 860,
+        "wires": [
+            [
+                "45d43d575475514a",
+                "1351b9159349ed8a"
+            ]
+        ]
+    },
+    {
+        "id": "1351b9159349ed8a",
+        "type": "debug",
+        "z": "76460f71d6773d9f",
+        "name": "debug 6",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 380,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "8ae16f78607033e3",
+        "type": "ui-template",
+        "z": "76460f71d6773d9f",
+        "group": "d64492c2fc2dd1fe",
+        "page": "",
+        "ui": "",
+        "name": "",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "head": "",
+        "format": "<template>\n    <div>\n        <h2>Counter</h2>\n        <p>Current Count:<span id=\"count\">{{ count }}<span></p>\n        <p class=\"my-class\">Formatted Count: {{ formattedCount }}</p>\n        <v-btn id=\"clickme\" @click=\"increase()\">Increment</v-btn>\n    </div>\n</template>\n\n<script>\n    export default {\n        data() {\n            // define variables available component-wide\n            // (in <template> and component functions)\n            return {\n                count: 0\n            }\n        },\n        watch: {\n            // watch for any changes of \"count\"\n            count: function () {\n                if (this.count % 5 === 0) {\n                    this.send({payload: 'Multiple of 5'})\n                }\n            }\n        },\n        computed: {\n            // automatically compute this variable\n            // whenever VueJS deems appropriate\n            formattedCount: function () {\n                return this.count + 'Apples'\n            }\n        },\n        methods: {\n            // expose a method to our <template> and Vue Application\n            increase: function () {\n                this.count++\n            }\n        },\n        mounted() {\n            // code here when the component is first loaded\n        },\n        unmounted() {\n            // code here when the component is removed from the Dashboard\n            // i.e. when the user navigates away from the page\n        }\n    }\n</script>\n<style>\n    /* define any styles here - supports raw CSS */\n    .my-class {\n        color: red;\n    }\n</style>",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 560,
+        "y": 920,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "45e04802bed1f727",
+        "type": "inject",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 340,
+        "y": 920,
+        "wires": [
+            [
+                "8ae16f78607033e3"
+            ]
+        ]
+    },
+    {
+        "id": "c3bef4a295d78b5b",
+        "type": "http in",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "url": "/api/v1/static/html",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 1060,
+        "wires": [
+            [
+                "44eebe9f6add9ca0"
+            ]
+        ]
+    },
+    {
+        "id": "44eebe9f6add9ca0",
+        "type": "template",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n\n    <!-- Declared Vars To Go Here -->\n\n    <meta charset=\"utf-8\">\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\n    <!-- Metadata -->\n    <meta name=\"description\" content=\"\">\n    <meta name=\"author\" content=\"\">\n\n    <link rel=\"icon\" href=\"mysource_files/favicon.ico\">\n\n    <!-- Page Name and Site Name -->\n    <title>Page Name - Squiz Matrix HTML Example</title>\n\n    <!-- CSS -->\n    <link href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css\" rel=\"stylesheet\">\n    <link href=\"mysource_files/style.css\" rel=\"stylesheet\">\n\n  </head>\n\n  <body>\n\n    <div class=\"container\">\n\n      <header class=\"header clearfix\" style=\"background-color: #ffffff\">\n\n        <!-- Main Menu -->\n        <nav>\n          <ul class=\"nav nav-pills pull-right\">\n            <li class=\"active\"><a href=\"#\">Home</a></li>\n            <li><a href=\"#\">About</a></li>\n            <li><a href=\"#\">Contact</a></li>\n          </ul>\n        </nav>\n\n        <!-- Site Name -->\n        <h1 class=\"h3 text-muted\">Site Name</h1>\n\n        <!-- Breadcrumbs -->\n        <ol class=\"breadcrumb\">\n          <li><a href=\"#\">Home</a></li>\n          <li><a href=\"#\">Level 1</a></li>\n          <li class=\"active\">Level 2</li>\n        </ol>\n\n      </header>\n\n      <div class=\"page-heading\">\n\n        <!-- Page Heading -->\n        <h1>Page Heading</h1>\n\n      </div>\n\n      <div class=\"row\">\n\n        <div class=\"col-sm-3\">\n\n          <!-- Sub Navigation -->\n          <ul class=\"nav nav-pills nav-stacked\">\n            <li><a href=\"#\">Level 2</a></li>\n            <li class=\"active\"><a href=\"#\">Level 2</a>\n              <ul>\n                <li><a href=\"#\">Level 3</a></li>\n                <li><a href=\"#\">Level 3</a></li>\n                <li><a href=\"#\">Level 3</a></li>\n              </ul>\n            </li>\n            <li><a href=\"#\">Level 2</a></li>\n          </ul>\n\n        </div>\n\n        <div class=\"col-sm-6\">\n\n          <div class=\"page-contents\">\n\n            <!-- Design Body -->\n            <h2>Sub Heading</h2>\n            <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>\n            <h4>Sub Heading</h4>\n            <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>\n            <h4>Sub Heading</h4>\n            <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>\n\n          </div>\n\n        </div>\n\n        <div class=\"col-sm-3\">\n\n          <!-- Login Section -->\n          <h2>Login</h2>\n\n          <!-- Search Section -->\n          <h2>Search</h2>\n\n          <!-- Nested Right Column Content -->\n\n        </div>\n\n      </div>\n\n      <footer class=\"footer\">\n        <p class=\"pull-right\">\n          <!-- Last Updated Design Area-->\n          Last Updated: Wednesday, January 6, 2016\n        </p>\n        <p>&copy; 2016 Company, Inc.</p>\n      </footer>\n\n    </div> <!-- /container -->\n\n  </body>\n</html>",
+        "output": "str",
+        "x": 340,
+        "y": 1060,
+        "wires": [
+            [
+                "79aef85b19e086aa",
+                "2bc0eb237e9c387a"
+            ]
+        ]
+    },
+    {
+        "id": "79aef85b19e086aa",
+        "type": "http response",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 540,
+        "y": 1060,
+        "wires": []
+    },
+    {
+        "id": "2bc0eb237e9c387a",
+        "type": "debug",
+        "z": "76460f71d6773d9f",
+        "name": "debug 9",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 540,
+        "y": 1100,
+        "wires": []
+    },
+    {
+        "id": "7c3a71a6a833a500",
+        "type": "random",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "low": 1,
+        "high": 10,
+        "inte": "true",
+        "property": "payload",
+        "x": 60,
+        "y": 580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "0d50ae3e7fb805f9",
+        "type": "random",
+        "z": "76460f71d6773d9f",
+        "name": "",
+        "low": 1,
+        "high": "100",
+        "inte": "true",
+        "property": "payload",
+        "x": 280,
+        "y": 700,
+        "wires": [
+            [
+                "e577fbc23964c880",
+                "5e78d7971436dc84"
+            ]
+        ]
+    },
+    {
+        "id": "d64492c2fc2dd1fe",
+        "type": "ui-group",
+        "name": "Metrics",
+        "page": "c97bb9d166890bcd",
+        "width": "6",
+        "height": "1",
+        "order": 1,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "c97bb9d166890bcd",
+        "type": "ui-page",
+        "name": "Video Bar GUI",
+        "ui": "b1f4e11939979488",
+        "path": "/video-bar",
+        "icon": "home",
+        "layout": "grid",
+        "theme": "a4397e02a8ffa8ab",
+        "order": 3,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "b1f4e11939979488",
+        "type": "ui-base",
+        "name": "My Dashboard",
+        "path": "/dashboard",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "navigationStyle": "default"
+    },
+    {
+        "id": "a4397e02a8ffa8ab",
+        "type": "ui-theme",
+        "name": "Default Theme",
+        "colors": {
+            "surface": "#ffffff",
+            "primary": "#0094CE",
+            "bgPage": "#eeeeee",
+            "groupBg": "#ffffff",
+            "groupOutline": "#cccccc"
+        },
+        "sizes": {
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    }
+]

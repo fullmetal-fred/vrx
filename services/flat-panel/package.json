@@ -1,0 +1,11 @@
+{
+    "name": "node-red-project",
+    "description": "A Node-RED Project",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "@flowfuse/node-red-dashboard": "^1.7",
+        "@ralphwetzel/node-red-context-monitor": "^1.2",
+        "dotenv": "^16.4"
+    }
+}

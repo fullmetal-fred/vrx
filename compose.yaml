@@ -1,0 +1,178 @@
+x-nr-sim-service: &nr-sim
+  develop:
+    watch:
+      - action: sync
+        path: ./flows.json
+        target: /data/flows.json
+  environment:
+    TZ: America/Boise
+    # CREDENTIAL_FILE_KEY: "${NR_CREDENTIAL_KEY:?Set NR_CREDENTIAL_KEY in .env}"
+    # ADMIN_USERNAME: "${NR_ADMIN_USERNAME:?Set NR_CREDENTIAL_KEY in .env}"
+    # ADMIN_PWHASH: "${NR_ADMIN_PWHASH:?Set NR_CREDENTIAL_KEY in .env}"
+  networks:
+    av-vlan:
+      # command: [ "--settings", "/settings.js" ]
+      # configs:
+      #   - source: nr-settings
+      #     target: /settings.js
+  restart: unless-stopped
+  cap_add:
+    - NET_ADMIN
+
+services:
+  flat-panel:
+    <<: *nr-sim
+    build:
+      context: ./services/flat-panel
+    networks:
+      av-vlan:
+        ipv4_address: 192.168.99.10
+    volumes:
+      - flat-panel-data:/data
+      # - ./services/flat-panel/.data:/data:rw
+    hostname: fp1
+    ports:
+      - "2880:1880"
+  # people-sensor:
+  #   <<: *nr-sim
+  #   # build:
+  #   #   dockerfile:  ./people-sensor/Dockerfile
+  #   networks:
+  #     av-vlan:
+  #       ipv4_address: 192.168.99.20
+  #   volumes:
+  #     - ./people-sensor/node-red-data:/data
+  #   hostname: boi17crm315bps
+  #   ports:
+  #     - "9920:1880"
+
+  # video-bar:
+  #   <<: *nr-sim
+  #   # build:
+  #   #   dockerfile:  ./video-bar/Dockerfile
+  #   networks:
+  #     av-vlan:
+  #       ipv4_address: 192.168.99.30
+  #   volumes:
+  #     - ./video-bar/node-red-data:/data
+  #   ports:
+  #     - "9930:1880"
+  #   hostname: boi17crm315bvb
+
+  # touch-control:
+  #   <<: *nr-sim
+  #   # build:
+  #   #   dockerfile:  ./touch-control/Dockerfile
+  #   networks:
+  #     av-vlan:
+  #       ipv4_address: 192.168.99.40
+  #   volumes:
+  #     - ./touch-control/node-red-data:/data
+  #   ports:
+  #     - "9940:1880"
+  #   hostname: boi17crm315btc
+
+  # control-processor:
+  #   <<: *nr-sim
+  #   # build:
+  #   #   dockerfile:  ./control-processor/Dockerfile
+  #   networks:
+  #     av-vlan:
+  #       ipv4_address: "192.168.99.50"
+  #   volumes:
+  #     - ./control-processor/node-red-data:/data
+  #   ports:
+  #     - "9950:1880"
+  #   hostname: boi17crm315bcp
+
+  # backend:
+  #   <<: *nr-sim
+  #   build:
+  #     context: ./backend
+  #   networks:
+  #     av-vlan:
+  #       ipv4_address: "192.168.99.7"
+  #   volumes:
+  #     - backend-data:/data
+  #   hostname: backend
+  #   ports:
+  #     - "9907:1880"
+
+  # cloudflared:
+  #   image: cloudflare/cloudflared:latest
+  #   command: tunnel run
+  #   environment:
+  #     TUNNEL_TOKEN: ${CF_TOKEN:?Set CF_TOKEN in .env}
+  #   networks:
+  #     av-vlan:
+  #   hostname: cloudflared
+
+  # slides:
+  #   image: fullmetalfred/zoom-presentation:local
+  #   environment:
+  #     - TZ=America/Boise
+  #   networks:
+  #     av-vlan:
+  #   ports:
+  #     - "3333:3030"
+  #   hostname: slides
+  #   command: ["slides.md", "--remote"]
+
+  # console:
+  #   build:
+  #     context: ./console
+  #     args:
+  #       ZBX_REPO_VERSION: ${ZBX_REPO_VERSION:?Set ZBX_REPO_VERSION in .env}
+  #       ZBX_REPO_RELEASE: ${ZBX_REPO_RELEASE:?Set ZBX_REPO_RELEASE in .env}
+  #       ZBX_REPO_PLATFORM: ${ZBX_REPO_PLATFORM:?Set ZBX_REPO_PLATFORM in .env}
+  #   environment:
+  #     - TZ=America/Boise
+  #   networks:
+  #     av-vlan:
+  #       ipv4_address: "192.168.99.5"
+  #   volumes:
+  #     - console-data:/home/fullmetal-fred
+  #   tty: true
+  #   stdin_open: true
+  #   stop_grace_period: 1s
+  #   hostname: console
+
+  # zabbix-proxy:
+  #   build:
+  #     context: ./zabbix-proxy
+  #     args:
+  #       ZBX_REPO_VERSION: ${ZBX_REPO_VERSION:?Set ZBX_REPO_VERSION in .env}
+  #       ZBX_REPO_RELEASE: ${ZBX_REPO_RELEASE:?Set ZBX_REPO_RELEASE in .env}
+  #       ZBX_REPO_PLATFORM: ${ZBX_REPO_PLATFORM:?Set ZBX_REPO_PLATFORM in .env}
+  #   networks:
+  #     - av-vlan
+  #   labels:
+  #     com.zabbix.os: "Ubuntu"
+  #   environment:
+  #     ZBX_SERVER_HOST: ${ZBX_SERVER_HOST:?Set ZBX_SERVER_HOST in .env}
+  #     ZBX_HOSTNAME: zabbix-proxy-edge
+  #     ZBX_PROXYMODE: 0
+  #     ZBX_ENABLEREMOTECOMMANDS: 1
+  #     TZ: America/Boise
+  #   hostname: zabbix-proxy
+  #TODO ffagent:
+  #TODO domotzagent:
+
+volumes:
+  console-data:
+  flat-panel-data:
+  backend-data:
+networks:
+  av-vlan:
+    driver: bridge
+    attachable: true
+    ipam:
+      driver: default
+      config:
+        - subnet: "192.168.99.0/24"
+          # ip_range: "192.168.99.128/25"
+          gateway: "192.168.99.1"
+
+# configs:
+#   nr-settings:
+#     file: ./node-red-settings.tpl.js

@@ -1,0 +1,395 @@
+[
+    {
+        "id": "b65286838546974b",
+        "type": "tab",
+        "label": "People Counter",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "76057a4a0a5abc8e",
+        "type": "http request",
+        "z": "b65286838546974b",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://zabbix-zabbix-web.zabbix/api_jsonrpc.php",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "Content-Type",
+                "keyValue": "",
+                "valueType": "other",
+                "valueValue": "application/json-rpc"
+            },
+            {
+                "keyType": "Authorization",
+                "keyValue": "",
+                "valueType": "other",
+                "valueValue": "Bearer 669d4d29cde72c45728a25d774bc2571532490586a87565be0a564e6095f032d"
+            }
+        ],
+        "x": 670,
+        "y": 120,
+        "wires": [
+            [
+                "ae455809d2b4d234"
+            ]
+        ]
+    },
+    {
+        "id": "86c815bea0b07e98",
+        "type": "inject",
+        "z": "b65286838546974b",
+        "name": "",
+        "props": [
+            {
+                "p": "timestamp",
+                "v": "",
+                "vt": "date"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "60",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 180,
+        "y": 120,
+        "wires": [
+            [
+                "8a404e85c273ae74"
+            ]
+        ]
+    },
+    {
+        "id": "5f36bc4d56c625a1",
+        "type": "template",
+        "z": "b65286838546974b",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{\n           \"jsonrpc\": \"2.0\",\n           \"method\": \"history.push\",\n           \"params\": [\n               {\n                   \"host\": \"Demo Room People Counter\",\n                   \"key\": \"currentPeopleCount\",\n                   \"value\": {{payload}}\n               }\n           ],\n           \"id\": {{timestamp}}\n       }",
+        "output": "json",
+        "x": 500,
+        "y": 120,
+        "wires": [
+            [
+                "76057a4a0a5abc8e"
+            ]
+        ]
+    },
+    {
+        "id": "ae455809d2b4d234",
+        "type": "debug",
+        "z": "b65286838546974b",
+        "name": "debug 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 840,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "8a404e85c273ae74",
+        "type": "random",
+        "z": "b65286838546974b",
+        "name": "",
+        "low": 1,
+        "high": 10,
+        "inte": "true",
+        "property": "payload",
+        "x": 340,
+        "y": 120,
+        "wires": [
+            [
+                "5f36bc4d56c625a1",
+                "ba478b9fa40d2cba"
+            ]
+        ]
+    },
+    {
+        "id": "ba478b9fa40d2cba",
+        "type": "ui-text",
+        "z": "b65286838546974b",
+        "group": "747fcc80d1536184",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Most Recent People Count",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#717171",
+        "className": "",
+        "x": 740,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "1d5723fc27d20ef6",
+        "type": "function",
+        "z": "b65286838546974b",
+        "d": true,
+        "name": "ssh server",
+        "func": "\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\nconst { timingSafeEqual } = crypto;\nconst { readFileSync } = fs;\nconst { inspect } = util;\n\nconst { utils: { parseKey }, Server } = ssh2;\n\nconst allowedUser = Buffer.from('foo');\nconst allowedPassword = Buffer.from('bar');\n// const allowedPubKey = parseKey(readFileSync('foo.pub'));\n\nfunction checkValue(input, allowed) {\n    const autoReject = (input.length !== allowed.length);\n    if (autoReject) {\n        // Prevent leaking length information by always making a comparison with the\n        // same input when lengths don't match what we expect ...\n        allowed = input;\n    }\n    const isMatch = timingSafeEqual(input, allowed);\n    return (!autoReject && isMatch);\n}\n\nnew Server({\n    hostKeys: []\n}, (client) => {\n    console.log('Client connected!');\n\n    client.on('authentication', (ctx) => {\n        let allowed = true;\n        if (!checkValue(Buffer.from(ctx.username), allowedUser))\n            allowed = false;\n\n        switch (ctx.method) {\n            case 'password':\n                if (!checkValue(Buffer.from(ctx.password), allowedPassword))\n                    return ctx.reject();\n                break;\n            // case 'publickey':\n            //     if (ctx.key.algo !== allowedPubKey.type\n            //         || !checkValue(ctx.key.data, allowedPubKey.getPublicSSH())\n            //         || (ctx.signature && allowedPubKey.verify(ctx.blob, ctx.signature, ctx.hashAlgo) !== true)) {\n            //         return ctx.reject();\n            //     }\n            //     break;\n            default:\n                return ctx.reject();\n        }\n\n        if (allowed)\n            ctx.accept();\n        else\n            ctx.reject();\n    }).on('ready', () => {\n        console.log('Client authenticated!');\n\n        client.on('session', (accept, reject) => {\n            const session = accept();\n            session.once('exec', (accept, reject, info) => {\n                console.log('Client wants to execute: ' + inspect(info.command));\n                const stream = accept();\n                stream.stderr.write('Oh no, the dreaded errors!\\n');\n                stream.write('Just kidding about the errors!\\n');\n                stream.exit(0);\n                stream.end();\n            });\n        });\n    }).on('close', () => {\n        console.log('Client disconnected');\n    });\n}).listen(1900, '127.0.0.1', function () {\n    console.log('Listening on port ' + this.address().port);\n});",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "ssh2",
+                "module": "ssh2"
+            },
+            {
+                "var": "crypto",
+                "module": "crypto"
+            },
+            {
+                "var": "fs",
+                "module": "fs"
+            }
+        ],
+        "x": 490,
+        "y": 400,
+        "wires": [
+            [
+                "04179f86c1afd6e8"
+            ]
+        ]
+    },
+    {
+        "id": "23b4d01cd0a5efd2",
+        "type": "inject",
+        "z": "b65286838546974b",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 300,
+        "y": 380,
+        "wires": [
+            [
+                "1d5723fc27d20ef6"
+            ]
+        ]
+    },
+    {
+        "id": "04179f86c1afd6e8",
+        "type": "debug",
+        "z": "b65286838546974b",
+        "name": "debug 8",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 680,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "3af669a64155f5c7",
+        "type": "ui-button",
+        "z": "b65286838546974b",
+        "group": "747fcc80d1536184",
+        "name": "",
+        "label": "Refresh Count",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 220,
+        "y": 180,
+        "wires": [
+            [
+                "8a404e85c273ae74"
+            ]
+        ]
+    },
+    {
+        "id": "acaccd7078b40a99",
+        "type": "ui-form",
+        "z": "b65286838546974b",
+        "name": "",
+        "group": "747fcc80d1536184",
+        "label": "",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "options": [
+            {
+                "label": "Hello",
+                "key": "hello",
+                "type": "text",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "hello": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "clear",
+        "resetOnSubmit": true,
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "className": "coolform",
+        "x": 210,
+        "y": 240,
+        "wires": [
+            [
+                "5fd54fbbfa7ee5b5"
+            ]
+        ]
+    },
+    {
+        "id": "1819bb013da9c9a0",
+        "type": "ui-text",
+        "z": "b65286838546974b",
+        "group": "747fcc80d1536184",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Hello",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#717171",
+        "className": "",
+        "x": 690,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "5fd54fbbfa7ee5b5",
+        "type": "template",
+        "z": "b65286838546974b",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "Hello: {{payload.hello}} !",
+        "output": "str",
+        "x": 440,
+        "y": 240,
+        "wires": [
+            [
+                "1819bb013da9c9a0"
+            ]
+        ]
+    },
+    {
+        "id": "747fcc80d1536184",
+        "type": "ui-group",
+        "name": "Status",
+        "page": "8253c80825b8712e",
+        "width": "6",
+        "height": "1",
+        "order": 1,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "8253c80825b8712e",
+        "type": "ui-page",
+        "name": "People Counter GUI",
+        "ui": "b1f4e11939979488",
+        "path": "/people-counter",
+        "icon": "home",
+        "layout": "grid",
+        "theme": "a4397e02a8ffa8ab",
+        "order": 1,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "b1f4e11939979488",
+        "type": "ui-base",
+        "name": "My Dashboard",
+        "path": "/dashboard",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "navigationStyle": "default"
+    },
+    {
+        "id": "a4397e02a8ffa8ab",
+        "type": "ui-theme",
+        "name": "Default Theme",
+        "colors": {
+            "surface": "#ffffff",
+            "primary": "#0094CE",
+            "bgPage": "#eeeeee",
+            "groupBg": "#ffffff",
+            "groupOutline": "#cccccc"
+        },
+        "sizes": {
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    }
+]
