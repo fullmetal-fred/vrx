@@ -1,9 +1,10 @@
-x-nr-sim-service: &nr-sim
-  develop:
-    watch:
-      - action: sync
-        path: ./flows.json
-        target: /data/flows.json
+x-nr-sim-service:
+  # develop:
+  #   watch:
+  #     - action: sync
+  #       path: ./flows.json
+  #       target: /data/flows.json
+  &nr-sim
   environment:
     TZ: America/Boise
     # CREDENTIAL_FILE_KEY: "${NR_CREDENTIAL_KEY:?Set NR_CREDENTIAL_KEY in .env}"
@@ -26,98 +27,37 @@ services:
       context: ./services/flat-panel
     networks:
       av-vlan:
-        ipv4_address: 192.168.99.10
+        ipv4_address: 192.168.99.20
     volumes:
       - flat-panel-data:/data
       # - ./services/flat-panel/.data:/data:rw
     hostname: fp1
     ports:
       - "2880:1880"
-  # people-sensor:
-  #   <<: *nr-sim
-  #   # build:
-  #   #   dockerfile:  ./people-sensor/Dockerfile
-  #   networks:
-  #     av-vlan:
-  #       ipv4_address: 192.168.99.20
-  #   volumes:
-  #     - ./people-sensor/node-red-data:/data
-  #   hostname: boi17crm315bps
-  #   ports:
-  #     - "9920:1880"
-
-  # video-bar:
-  #   <<: *nr-sim
-  #   # build:
-  #   #   dockerfile:  ./video-bar/Dockerfile
-  #   networks:
-  #     av-vlan:
-  #       ipv4_address: 192.168.99.30
-  #   volumes:
-  #     - ./video-bar/node-red-data:/data
-  #   ports:
-  #     - "9930:1880"
-  #   hostname: boi17crm315bvb
-
-  # touch-control:
-  #   <<: *nr-sim
-  #   # build:
-  #   #   dockerfile:  ./touch-control/Dockerfile
-  #   networks:
-  #     av-vlan:
-  #       ipv4_address: 192.168.99.40
-  #   volumes:
-  #     - ./touch-control/node-red-data:/data
-  #   ports:
-  #     - "9940:1880"
-  #   hostname: boi17crm315btc
-
-  # control-processor:
-  #   <<: *nr-sim
-  #   # build:
-  #   #   dockerfile:  ./control-processor/Dockerfile
-  #   networks:
-  #     av-vlan:
-  #       ipv4_address: "192.168.99.50"
-  #   volumes:
-  #     - ./control-processor/node-red-data:/data
-  #   ports:
-  #     - "9950:1880"
-  #   hostname: boi17crm315bcp
-
-  # backend:
-  #   <<: *nr-sim
-  #   build:
-  #     context: ./backend
-  #   networks:
-  #     av-vlan:
-  #       ipv4_address: "192.168.99.7"
-  #   volumes:
-  #     - backend-data:/data
-  #   hostname: backend
-  #   ports:
-  #     - "9907:1880"
-
-  # cloudflared:
-  #   image: cloudflare/cloudflared:latest
-  #   command: tunnel run
-  #   environment:
-  #     TUNNEL_TOKEN: ${CF_TOKEN:?Set CF_TOKEN in .env}
-  #   networks:
-  #     av-vlan:
-  #   hostname: cloudflared
-
-  # slides:
-  #   image: fullmetalfred/zoom-presentation:local
-  #   environment:
-  #     - TZ=America/Boise
-  #   networks:
-  #     av-vlan:
-  #   ports:
-  #     - "3333:3030"
-  #   hostname: slides
-  #   command: ["slides.md", "--remote"]
-
+  people-sensor:
+    <<: *nr-sim
+    build:
+      context: ./services/people-sensor
+    networks:
+      av-vlan:
+        ipv4_address: 192.168.99.30
+    volumes:
+      - people-sensor-data:/data
+    hostname: ps1
+    ports:
+      - "3880:1880"
+  video-bar:
+    <<: *nr-sim
+    build:
+      context: ./services/video-bar
+    networks:
+      av-vlan:
+        ipv4_address: 192.168.99.40
+    volumes:
+      - video-bar-data:/data
+    hostname: ps1
+    ports:
+      - "4880:1880"
   # console:
   #   build:
   #     context: ./console
@@ -161,7 +101,8 @@ services:
 volumes:
   console-data:
   flat-panel-data:
-  backend-data:
+  people-sensor-data:
+  video-bar-data:
 networks:
   av-vlan:
     driver: bridge

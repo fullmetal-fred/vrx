@@ -1,6 +1,6 @@
 {
-    "name": "vrx-flat-panel",
-    "description": "VRX Flat Panel",
+    "name": "vrx-video-bar",
+    "description": "VRX Video Bar",
     "version": "0.0.1",
     "private": true,
     "dependencies": {
