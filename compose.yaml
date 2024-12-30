@@ -34,6 +34,15 @@ services:
     hostname: fp1
     ports:
       - "2880:1880"
+  flat-panel-snmp:
+    <<: *nr-sim
+    image: ghcr.io/fullmetal-fred/snmp-emulator:latest
+    networks:
+      av-vlan:
+        ipv4_address: 192.168.99.21
+    hostname: fp1-snmp
+    ports:
+      - "1611:1611/udp"
   people-sensor:
     <<: *nr-sim
     build:
@@ -55,9 +64,10 @@ services:
         ipv4_address: 192.168.99.40
     volumes:
       - video-bar-data:/data
-    hostname: ps1
+    hostname: vb1
     ports:
       - "4880:1880"
+
   # console:
   #   build:
   #     context: ./console
@@ -77,26 +87,30 @@ services:
   #   stop_grace_period: 1s
   #   hostname: console
 
-  # zabbix-proxy:
-  #   build:
-  #     context: ./zabbix-proxy
-  #     args:
-  #       ZBX_REPO_VERSION: ${ZBX_REPO_VERSION:?Set ZBX_REPO_VERSION in .env}
-  #       ZBX_REPO_RELEASE: ${ZBX_REPO_RELEASE:?Set ZBX_REPO_RELEASE in .env}
-  #       ZBX_REPO_PLATFORM: ${ZBX_REPO_PLATFORM:?Set ZBX_REPO_PLATFORM in .env}
-  #   networks:
-  #     - av-vlan
-  #   labels:
-  #     com.zabbix.os: "Ubuntu"
-  #   environment:
-  #     ZBX_SERVER_HOST: ${ZBX_SERVER_HOST:?Set ZBX_SERVER_HOST in .env}
-  #     ZBX_HOSTNAME: zabbix-proxy-edge
-  #     ZBX_PROXYMODE: 0
-  #     ZBX_ENABLEREMOTECOMMANDS: 1
-  #     TZ: America/Boise
-  #   hostname: zabbix-proxy
-  #TODO ffagent:
-  #TODO domotzagent:
+  zabbix-proxy:
+    image: ghcr.io/fullmetal-fred/zabbix-proxy:latest
+    networks:
+      - av-vlan
+    labels:
+      com.zabbix.os: "Ubuntu"
+    environment:
+      ZBX_SERVER_HOST: ${ZBX_SERVER_HOST:?Set ZBX_SERVER_HOST in .env}
+      ZBX_HOSTNAME: ${ZBX_PROXY_HOSTNAME:?Set ZBX_PROXY_HOSTNAME in .env}
+      ZBX_PROXYMODE: 0
+      ZBX_ENABLEREMOTECOMMANDS: 1
+      TZ: America/Boise
+      ZBX_WEBDRIVERURL: chrome:4444
+    hostname: zabbix-proxy
+
+  chrome:
+    image: selenium/standalone-chrome:latest
+    networks:
+      - av-vlan
+    hostname: chrome
+    shm_size: 2gb
+    ports:
+      - 4444:4444
+      - 7900:7900
 
 volumes:
   console-data:
